@@ -1,0 +1,120 @@
+# Beets Configuration for Japanese Music Library
+# ================================================
+
+# Library location (NAS)
+directory: /path/to/your/music/
+library: ~/.config/beets/musiclibrary.db
+
+# Plugins
+plugins:
+    - chroma
+    - fetchart
+    - embedart
+    - lastgenre
+    - mbsync
+    - missing
+    - duplicates
+    - edit
+    - info
+    - inline
+    - ftintitle
+    - the
+
+# Import settings — tag files in place, don't move or copy
+import:
+    copy: no
+    move: no
+    write: yes
+    timid: no
+    log: ~/.config/beets/import.log
+    quiet_fallback: asis
+
+# MusicBrainz — prefer Japanese metadata, use canonical artist names
+# artist_credit: no means all releases by the same MB artist get the same
+# canonical name (kanji for JP artists), which consolidates romaji/kanji dupes
+musicbrainz:
+    languages: ['ja', 'en']
+    artist_credit: no
+    ratelimit: 1
+
+# Acoustic fingerprinting
+acoustid:
+    apikey: YOUR_ACOUSTID_API_KEY
+chroma:
+    auto: yes
+
+# Match tuning for Japanese music
+match:
+    strong_rec_thresh: 0.10
+    medium_rec_thresh: 0.40
+    rec_gap_thresh: 0.25
+    preferred:
+        countries: ['JP', 'XW']
+        media: ['Digital Media', 'CD']
+        original_year: yes
+    missing_penalty: 0.3
+
+# Path templates — use romanized sort name for folders, tags stay in kanji
+paths:
+    default: '%the{$albumartist_sort}/$album%aunique{}/%if{$disc,$disc-}$track $title'
+    singleton: 'Singletons/%the{$albumartist_sort}/$title'
+    comp: 'Compilations/$album%aunique{}/%if{$disc,$disc-}$track $title'
+
+# Inline plugin — computed fields
+album_fields:
+    artist_romaji: |
+        if albumartist_sort:
+            parts = albumartist_sort.split(', ', 1)
+            if len(parts) == 2:
+                return parts[1] + ' ' + parts[0]
+        return albumartist_sort or albumartist
+
+item_fields:
+    artist_romaji: |
+        if albumartist_sort:
+            parts = albumartist_sort.split(', ', 1)
+            if len(parts) == 2:
+                return parts[1] + ' ' + parts[0]
+        return albumartist_sort or albumartist
+
+# Album art
+fetchart:
+    auto: yes
+    minwidth: 500
+    maxwidth: 1200
+    sources:
+        - filesystem
+        - coverart
+        - musicbrainz
+        - itunes
+        - amazon
+    store_source: yes
+
+embedart:
+    auto: yes
+    maxwidth: 1200
+    remove_art_file: no
+
+# Genre tagging from Last.fm
+lastgenre:
+    auto: yes
+    count: 3
+    source: album
+    min_weight: 10
+
+# Featured artists — move to title field to keep artist field clean
+ftintitle:
+    auto: yes
+    format: 'feat. {0}'
+
+# ID3v2.4 for proper UTF-8/CJK support
+id3v23: no
+
+original_date: yes
+per_disc_numbering: no
+
+sort_album: albumartist+ album+
+sort_item: albumartist+ album+ disc+ track+
+
+ui:
+    color: yes

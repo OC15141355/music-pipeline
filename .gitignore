@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*-env/
+
+# Pipeline output (generated, don't commit)
+*.csv
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
